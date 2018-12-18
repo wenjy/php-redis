@@ -9,6 +9,7 @@ services:
 before_script:
   - composer self-update
   - composer install --prefer-source --no-interaction --dev
+  - redis-server --version
 
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar

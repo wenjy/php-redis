@@ -112,7 +112,8 @@ class SetTest extends TestCase
         $key = $this->generateKey();
         $this->redis->sadd($key, 'val1', 'val2');
         $array = $this->redis->smembers($key);
-        $this->assertArraySubset(['val2', 'val1'], $array);
+        sort($array);
+        $this->assertArraySubset(['val1', 'val2'], $array);
     }
 
     /**
@@ -195,6 +196,7 @@ class SetTest extends TestCase
         $this->redis->sadd($key1, 'val1', 'val2');
         $this->redis->sadd($key2, 'val1', 'val3');
         $unionArray = $this->redis->sunion($key1, $key2);
+        sort($unionArray);
         $this->assertArraySubset(['val1', 'val2', 'val3'], $unionArray);
     }
 
