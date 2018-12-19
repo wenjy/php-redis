@@ -24,6 +24,8 @@ class TestCase extends BaseTestCase
      */
     protected $testRedisKeyList = [];
 
+    const TEST_REDIS_KEY_PRE = 'test_redis_key_';
+
     public function setUp()
     {
         if ($this->redis === null) {
@@ -40,9 +42,9 @@ class TestCase extends BaseTestCase
         $this->redis->close();
     }
 
-    protected function generateKey()
+    protected function generateKey($suffix = null)
     {
-        $key = 'test_redis_key_' . uniqid();
+        $key = self::TEST_REDIS_KEY_PRE . ($suffix ? $suffix : uniqid());
         $this->testRedisKeyList[] = $key;
         return $key;
     }
