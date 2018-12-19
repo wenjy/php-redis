@@ -332,7 +332,7 @@ class KeyTest extends TestCase
         $this->assertEquals(5, count($res[1]));
 
         $res = $this->redis->sscan($key3, 0);
-        $this->assertArraySubset(['0', ['hello', 'world']], $res);
+        $this->assertEquals(2, count($res[1]));
 
         $res = $this->redis->hscan($key5, 0);
         $this->assertArraySubset(['0', ['key1', 'hello', 'key2', 'world']], $res);
