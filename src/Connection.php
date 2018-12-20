@@ -4,7 +4,7 @@
  * @author: jiangyi
  * @date: 下午8:39 2018/12/13
  *
- * @see https://github.com/yiisoft/yii2-redis
+ * @see https://github.com/yiisoft/yii2-redis/blob/master/src/Connection.php
  */
 
 namespace EasyRedis;
@@ -228,14 +228,63 @@ use EasyRedis\Helpers\Inflector;
  */
 class Connection
 {
+    /**
+     * @var string the hostname or ip address to use for connecting to the redis server. Defaults to 'localhost'.
+     * If [[unixSocket]] is specified, hostname and [[port]] will be ignored.
+     */
     public $hostname = 'localhost';
+    /**
+     * @var integer the port to use for connecting to the redis server. Default port is 6379.
+     * If [[unixSocket]] is specified, [[hostname]] and port will be ignored.
+     */
     public $port = 6379;
+    /**
+     * @var string the unix socket path (e.g. `/var/run/redis/redis.sock`) to use for connecting to the redis server.
+     * This can be used instead of [[hostname]] and [[port]] to connect to the server using a unix socket.
+     * If a unix socket path is specified, [[hostname]] and [[port]] will be ignored.
+     */
     public $unixSocket;
+    /**
+     * @var string the password for establishing DB connection. Defaults to null meaning no AUTH command is sent.
+     * See http://redis.io/commands/auth
+     */
     public $password;
+    /**
+     * @var integer the redis database to use. This is an integer value starting from 0. Defaults to 0.
+     */
     public $database = 0;
+    /**
+     * @var float timeout to use for connection to redis. If not set the timeout set in php.ini will be used: `ini_get("default_socket_timeout")`.
+     */
     public $connectionTimeout = null;
+    /**
+     * @var float timeout to use for redis socket when reading and writing data. If not set the php default value will be used.
+     */
     public $dataTimeout = null;
+    /**
+     * @var integer Bitmask field which may be set to any combination of connection flags passed to [stream_socket_client()](http://php.net/manual/en/function.stream-socket-client.php).
+     * Currently the select of connection flags is limited to `STREAM_CLIENT_CONNECT` (default), `STREAM_CLIENT_ASYNC_CONNECT` and `STREAM_CLIENT_PERSISTENT`.
+     *
+     * > Warning: `STREAM_CLIENT_PERSISTENT` will make PHP reuse connections to the same server. If you are using multiple
+     * > connection objects to refer to different redis [[$database|databases]] on the same [[port]], redis commands may
+     * > get executed on the wrong database. `STREAM_CLIENT_PERSISTENT` is only safe to use if you use only one database.
+     * >
+     * > You may still use persistent connections in this case when disambiguating ports as described
+     * > in [a comment on the PHP manual](http://php.net/manual/en/function.stream-socket-client.php#105393)
+     * > e.g. on the connection used for session storage, specify the port as:
+     * >
+     * > ```php
+     * > 'port' => '6379/session'
+     * > ```
+     *
+     * @see http://php.net/manual/en/function.stream-socket-client.php
+     */
     public $socketClientFlags = STREAM_CLIENT_CONNECT;
+    /**
+     * @var integer The number of times a command execution should be retried when a connection failure occurs.
+     * This is used in [[executeCommand()]] when a [[SocketException]] is thrown.
+     * Defaults to 0 meaning no retries on failure.
+     */
     public $retries = 0;
 
     /**
@@ -447,6 +496,29 @@ class Connection
      * @var bool|Resource
      */
     private $_socket = false;
+
+    /**
+     * Connection constructor.
+     * @param array $config
+     */
+    public function __construct($config = [])
+    {
+        if (!empty($config)) {
+            foreach ($config as $name => $value) {
+                $this->$name = $value;
+            }
+        }
+        $this->init();
+    }
+
+    /**
+     * Initializes the object.
+     * This method is invoked at the end of the constructor after the object is initialized with the
+     * given configuration.
+     */
+    public function init()
+    {
+    }
 
     /**
      * Closes the connection when this component is being serialized.
