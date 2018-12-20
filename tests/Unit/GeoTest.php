@@ -22,6 +22,13 @@ class GeoTest extends TestCase
         $this->assertEquals(2, $number);
     }
 
+    public function testAddA()
+    {
+        $key = $this->generateKey();
+        $number = $this->redis->geoadd_a($key, [13.361389, 38.115556, 'Palermo', 15.087269, 37.502669, 'Catania']);
+        $this->assertEquals(2, $number);
+    }
+
     /**
      * 从键里面返回所有给定位置元素的位置（经度和纬度）
      */

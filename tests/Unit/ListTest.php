@@ -21,6 +21,13 @@ class ListTest extends TestCase
         $this->assertEquals(3, $length);
     }
 
+    public function testLPushA()
+    {
+        $key = $this->generateKey();
+        $length = $this->redis->lpush_a($key, ['val1', 'val2', 'val3']);
+        $this->assertEquals(3, $length);
+    }
+
     /**
      * 将值 value 插入到列表 key 的表头，当且仅当 key 存在并且是一个列表。
      * 和 LPUSH 命令相反，当 key 不存在时， LPUSHX 命令什么也不做
@@ -144,6 +151,13 @@ class ListTest extends TestCase
     {
         $key = $this->generateKey();
         $length = $this->redis->rpush($key, 'val1', 'val2', 'val3');
+        $this->assertEquals(3, $length);
+    }
+
+    public function testRPushA()
+    {
+        $key = $this->generateKey();
+        $length = $this->redis->rpush_a($key, ['val1', 'val2', 'val3']);
         $this->assertEquals(3, $length);
     }
 

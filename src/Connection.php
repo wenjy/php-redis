@@ -33,9 +33,12 @@ use EasyRedis\Helpers\Inflector;
  * @method mixed bitcount($key, $start = null, $end = null) Count set bits in a string. <https://redis.io/commands/bitcount>
  * @method mixed bitfield($key, ...$operations) Perform arbitrary bitfield integer operations on strings. <https://redis.io/commands/bitfield>
  * @method mixed bitop($operation, $destkey, ...$keys) Perform bitwise operations between strings. <https://redis.io/commands/bitop>
+ * @method mixed bitop_a($operation, $destkey, array $keys) Perform bitwise operations between strings. <https://redis.io/commands/bitop>
  * @method mixed bitpos($key, $bit, $start = null, $end = null) Find first bit set or clear in a string. <https://redis.io/commands/bitpos>
  * @method mixed blpop(...$keys, $timeout) Remove and get the first element in a list, or block until one is available. <https://redis.io/commands/blpop>
+ * @method mixed blpop_a(array $keys, $timeout) Remove and get the first element in a list, or block until one is available. <https://redis.io/commands/blpop>
  * @method mixed brpop(...$keys, $timeout) Remove and get the last element in a list, or block until one is available. <https://redis.io/commands/brpop>
+ * @method mixed brpop_a(array $keys, $timeout) Remove and get the last element in a list, or block until one is available. <https://redis.io/commands/brpop>
  * @method mixed brpoplpush($source, $destination, $timeout) Pop a value from a list, push it to another list and return it; or block until one is available. <https://redis.io/commands/brpoplpush>
  * @method mixed clientKill(...$filters) Kill the connection of a client. <https://redis.io/commands/client-kill>
  * @method mixed clientList() Get the list of client connections. <https://redis.io/commands/client-list>
@@ -73,6 +76,7 @@ use EasyRedis\Helpers\Inflector;
  * @method mixed decr($key) Decrement the integer value of a key by one. <https://redis.io/commands/decr>
  * @method mixed decrby($key, $decrement) Decrement the integer value of a key by the given number. <https://redis.io/commands/decrby>
  * @method mixed del(...$keys) Delete a key. <https://redis.io/commands/del>
+ * @method mixed del_a(array $keys) Delete a key. <https://redis.io/commands/del>
  * @method mixed discard() Discard all commands issued after MULTI. <https://redis.io/commands/discard>
  * @method mixed dump($key) Return a serialized version of the value stored at the specified key.. <https://redis.io/commands/dump>
  * @method mixed echo($message) Echo the given string. <https://redis.io/commands/echo>
@@ -80,11 +84,13 @@ use EasyRedis\Helpers\Inflector;
  * @method mixed evalsha($sha1, $numkeys, ...$keys, ...$args) Execute a Lua script server side. <https://redis.io/commands/evalsha>
  * @method mixed exec() Execute all commands issued after MULTI. <https://redis.io/commands/exec>
  * @method mixed exists(...$keys) Determine if a key exists. <https://redis.io/commands/exists>
+ * @method mixed exists_a(array $keys) Determine if a key exists. <https://redis.io/commands/exists>
  * @method mixed expire($key, $seconds) Set a key's time to live in seconds. <https://redis.io/commands/expire>
  * @method mixed expireat($key, $timestamp) Set the expiration for a key as a UNIX timestamp. <https://redis.io/commands/expireat>
  * @method mixed flushall($ASYNC = null) Remove all keys from all databases. <https://redis.io/commands/flushall>
  * @method mixed flushdb($ASYNC = null) Remove all keys from the current database. <https://redis.io/commands/flushdb>
  * @method mixed geoadd($key, $longitude, $latitude, $member, ...$more) Add one or more geospatial items in the geospatial index represented using a sorted set. <https://redis.io/commands/geoadd>
+ * @method mixed geoadd_a($key, array $data) Add one or more geospatial items in the geospatial index represented using a sorted set. <https://redis.io/commands/geoadd>
  * @method mixed geohash($key, ...$members) Returns members of a geospatial index as standard geohash strings. <https://redis.io/commands/geohash>
  * @method mixed geopos($key, ...$members) Returns longitude and latitude of members of a geospatial index. <https://redis.io/commands/geopos>
  * @method mixed geodist($key, $member1, $member2, $unit = null) Returns the distance between two members of a geospatial index. <https://redis.io/commands/geodist>
@@ -95,6 +101,7 @@ use EasyRedis\Helpers\Inflector;
  * @method mixed getrange($key, $start, $end) Get a substring of the string stored at a key. <https://redis.io/commands/getrange>
  * @method mixed getset($key, $value) Set the string value of a key and return its old value. <https://redis.io/commands/getset>
  * @method mixed hdel($key, ...$fields) Delete one or more hash fields. <https://redis.io/commands/hdel>
+ * @method mixed hdel_a($key, array $fields) Delete one or more hash fields. <https://redis.io/commands/hdel>
  * @method mixed hexists($key, $field) Determine if a hash field exists. <https://redis.io/commands/hexists>
  * @method mixed hget($key, $field) Get the value of a hash field. <https://redis.io/commands/hget>
  * @method mixed hgetall($key) Get all the fields and values in a hash. <https://redis.io/commands/hgetall>
@@ -103,7 +110,9 @@ use EasyRedis\Helpers\Inflector;
  * @method mixed hkeys($key) Get all the fields in a hash. <https://redis.io/commands/hkeys>
  * @method mixed hlen($key) Get the number of fields in a hash. <https://redis.io/commands/hlen>
  * @method mixed hmget($key, ...$fields) Get the values of all the given hash fields. <https://redis.io/commands/hmget>
+ * @method mixed hmget_a($key, array $fields) Get the values of all the given hash fields. <https://redis.io/commands/hmget>
  * @method mixed hmset($key, $field, $value, ...$more) Set multiple hash fields to multiple values. <https://redis.io/commands/hmset>
+ * @method mixed hmset_a($key, array $fieldValuePairs) Set multiple hash fields to multiple values. <https://redis.io/commands/hmset>
  * @method mixed hset($key, $field, $value) Set the string value of a hash field. <https://redis.io/commands/hset>
  * @method mixed hsetnx($key, $field, $value) Set the value of a hash field, only if the field does not exist. <https://redis.io/commands/hsetnx>
  * @method mixed hstrlen($key, $field) Get the length of the value of a hash field. <https://redis.io/commands/hstrlen>
@@ -119,25 +128,33 @@ use EasyRedis\Helpers\Inflector;
  * @method mixed llen($key) Get the length of a list. <https://redis.io/commands/llen>
  * @method mixed lpop($key) Remove and get the first element in a list. <https://redis.io/commands/lpop>
  * @method mixed lpush($key, ...$values) Prepend one or multiple values to a list. <https://redis.io/commands/lpush>
+ * @method mixed lpush_a($key, array $values) Prepend one or multiple values to a list. <https://redis.io/commands/lpush>
  * @method mixed lpushx($key, $value) Prepend a value to a list, only if the list exists. <https://redis.io/commands/lpushx>
  * @method mixed lrange($key, $start, $stop) Get a range of elements from a list. <https://redis.io/commands/lrange>
  * @method mixed lrem($key, $count, $value) Remove elements from a list. <https://redis.io/commands/lrem>
  * @method mixed lset($key, $index, $value) Set the value of an element in a list by its index. <https://redis.io/commands/lset>
  * @method mixed ltrim($key, $start, $stop) Trim a list to the specified range. <https://redis.io/commands/ltrim>
  * @method mixed mget(...$keys) Get the values of all the given keys. <https://redis.io/commands/mget>
+ * @method mixed mget_a(array $keys) Get the values of all the given keys. <https://redis.io/commands/mget>
  * @method mixed migrate($host, $port, $key, $destinationDb, $timeout, ...$options) Atomically transfer a key from a Redis instance to another one.. <https://redis.io/commands/migrate>
  * @method mixed monitor() Listen for all requests received by the server in real time. <https://redis.io/commands/monitor>
  * @method mixed move($key, $db) Move a key to another database. <https://redis.io/commands/move>
  * @method mixed mset(...$keyValuePairs) Set multiple keys to multiple values. <https://redis.io/commands/mset>
+ * @method mixed mset_a(array $keyValuePairs) Set multiple keys to multiple values. <https://redis.io/commands/mset>
  * @method mixed msetnx(...$keyValuePairs) Set multiple keys to multiple values, only if none of the keys exist. <https://redis.io/commands/msetnx>
+ * @method mixed msetnx_a(array $keyValuePairs) Set multiple keys to multiple values, only if none of the keys exist. <https://redis.io/commands/msetnx>
  * @method mixed multi() Mark the start of a transaction block. <https://redis.io/commands/multi>
  * @method mixed object($subcommand, ...$argumentss) Inspect the internals of Redis objects. <https://redis.io/commands/object>
+ * @method mixed object_a($subcommand, array $argumentss) Inspect the internals of Redis objects. <https://redis.io/commands/object>
  * @method mixed persist($key) Remove the expiration from a key. <https://redis.io/commands/persist>
  * @method mixed pexpire($key, $milliseconds) Set a key's time to live in milliseconds. <https://redis.io/commands/pexpire>
  * @method mixed pexpireat($key, $millisecondsTimestamp) Set the expiration for a key as a UNIX timestamp specified in milliseconds. <https://redis.io/commands/pexpireat>
  * @method mixed pfadd($key, ...$elements) Adds the specified elements to the specified HyperLogLog.. <https://redis.io/commands/pfadd>
+ * @method mixed pfadd_a($key, array $elements) Adds the specified elements to the specified HyperLogLog.. <https://redis.io/commands/pfadd>
  * @method mixed pfcount(...$keys) Return the approximated cardinality of the set(s) observed by the HyperLogLog at key(s).. <https://redis.io/commands/pfcount>
+ * @method mixed pfcount_a(array $keys) Return the approximated cardinality of the set(s) observed by the HyperLogLog at key(s).. <https://redis.io/commands/pfcount>
  * @method mixed pfmerge($destkey, ...$sourcekeys) Merge N different HyperLogLogs into a single one.. <https://redis.io/commands/pfmerge>
+ * @method mixed pfmerge_a($destkey, array $sourcekeys) Merge N different HyperLogLogs into a single one.. <https://redis.io/commands/pfmerge>
  * @method mixed ping($message = null) Ping the server. <https://redis.io/commands/ping>
  * @method mixed psetex($key, $milliseconds, $value) Set the value and expiration in milliseconds of a key. <https://redis.io/commands/psetex>
  * @method mixed psubscribe(...$patterns) Listen for messages published to channels matching the given patterns. <https://redis.io/commands/psubscribe>
@@ -156,8 +173,10 @@ use EasyRedis\Helpers\Inflector;
  * @method mixed rpop($key) Remove and get the last element in a list. <https://redis.io/commands/rpop>
  * @method mixed rpoplpush($source, $destination) Remove the last element in a list, prepend it to another list and return it. <https://redis.io/commands/rpoplpush>
  * @method mixed rpush($key, ...$values) Append one or multiple values to a list. <https://redis.io/commands/rpush>
+ * @method mixed rpush_a($key, array $values) Append one or multiple values to a list. <https://redis.io/commands/rpush>
  * @method mixed rpushx($key, $value) Append a value to a list, only if the list exists. <https://redis.io/commands/rpushx>
  * @method mixed sadd($key, ...$members) Add one or more members to a set. <https://redis.io/commands/sadd>
+ * @method mixed sadd_a($key, array $members) Add one or more members to a set. <https://redis.io/commands/sadd>
  * @method mixed save() Synchronously save the dataset to disk. <https://redis.io/commands/save>
  * @method mixed scard($key) Get the number of members in a set. <https://redis.io/commands/scard>
  * @method mixed scriptDebug($option) Set the debug mode for executed scripts.. <https://redis.io/commands/script-debug>
@@ -185,6 +204,7 @@ use EasyRedis\Helpers\Inflector;
  * @method mixed spop($key, $count = null) Remove and return one or multiple random members from a set. <https://redis.io/commands/spop>
  * @method mixed srandmember($key, $count = null) Get one or multiple random members from a set. <https://redis.io/commands/srandmember>
  * @method mixed srem($key, ...$members) Remove one or more members from a set. <https://redis.io/commands/srem>
+ * @method mixed srem_a($key, array $members) Remove one or more members from a set. <https://redis.io/commands/srem>
  * @method mixed strlen($key) Get the length of the value stored in a key. <https://redis.io/commands/strlen>
  * @method mixed subscribe(...$channels) Listen for messages published to the given channels. <https://redis.io/commands/subscribe>
  * @method mixed sunion(...$keys) Add multiple sets. <https://redis.io/commands/sunion>
@@ -201,6 +221,7 @@ use EasyRedis\Helpers\Inflector;
  * @method mixed wait($numslaves, $timeout) Wait for the synchronous replication of all the write commands sent in the context of the current connection. <https://redis.io/commands/wait>
  * @method mixed watch(...$keys) Watch the given keys to determine execution of the MULTI/EXEC block. <https://redis.io/commands/watch>
  * @method mixed zadd($key, ...$options) Add one or more members to a sorted set, or update its score if it already exists. <https://redis.io/commands/zadd>
+ * @method mixed zadd_a($key, array $options) Add one or more members to a sorted set, or update its score if it already exists. <https://redis.io/commands/zadd>
  * @method mixed zcard($key) Get the number of members in a sorted set. <https://redis.io/commands/zcard>
  * @method mixed zcount($key, $min, $max) Count the members in a sorted set with scores within the given values. <https://redis.io/commands/zcount>
  * @method mixed zincrby($key, $increment, $member) Increment the score of a member in a sorted set. <https://redis.io/commands/zincrby>
@@ -212,6 +233,7 @@ use EasyRedis\Helpers\Inflector;
  * @method mixed zrangebyscore($key, $min, $max, $WITHSCORES = null, $LIMIT = null, $offset = null, $count = null) Return a range of members in a sorted set, by score. <https://redis.io/commands/zrangebyscore>
  * @method mixed zrank($key, $member) Determine the index of a member in a sorted set. <https://redis.io/commands/zrank>
  * @method mixed zrem($key, ...$members) Remove one or more members from a sorted set. <https://redis.io/commands/zrem>
+ * @method mixed zrem_a($key, array $members) Remove one or more members from a sorted set. <https://redis.io/commands/zrem>
  * @method mixed zremrangebylex($key, $min, $max) Remove all members in a sorted set between the given lexicographical range. <https://redis.io/commands/zremrangebylex>
  * @method mixed zremrangebyrank($key, $start, $stop) Remove all members in a sorted set within the given indexes. <https://redis.io/commands/zremrangebyrank>
  * @method mixed zremrangebyscore($key, $min, $max) Remove all members in a sorted set within the given scores. <https://redis.io/commands/zremrangebyscore>
@@ -608,6 +630,10 @@ class Connection
      *
      * ```php
      * $redis->hmset('test_collection', 'key1', 'val1', 'key2', 'val2')
+     * OR
+     * $redis->hmset(['test_collection', 'key1', 'val1', 'key2', 'val2'])
+     * OR
+     * $redis->hmset('test_collection', ['key1', 'val1', 'key2', 'val2'])
      * ```
      *
      * @param string $name name of the missing method to execute
@@ -618,12 +644,37 @@ class Connection
      */
     public function __call($name, $params)
     {
+        if (false !== strpos($name, '_a')) {
+            $name = substr($name, 0, -2);
+            $params = $this->normalizeParams($name, $params);
+        }
         $redisCommand = strtoupper(Inflector::camel2words($name, false));
         if (in_array($redisCommand, $this->redisCommands)) {
             return $this->executeCommand($redisCommand, $params);
         }
 
         throw new Exception("method {$name} not found");
+    }
+
+    /**
+     * 如果参数是二维数组，转化为一维，为了支持函数调用时传数组参数
+     * @param $name
+     * @param $params
+     * @return array
+     */
+    private function normalizeParams($name, $params)
+    {
+        $arguments = [];
+        foreach ($params as $args) {
+            if (is_array($args)) {
+                foreach ($args as $arg) {
+                    $arguments[] = $arg;
+                }
+            } else {
+                $arguments[] = $args;
+            }
+        }
+        return $arguments;
     }
 
     /**

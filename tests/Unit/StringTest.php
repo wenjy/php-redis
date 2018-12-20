@@ -97,6 +97,33 @@ class StringTest extends TestCase
         $this->assertEquals(1, $res);
     }
 
+    public function testBitOPA()
+    {
+        $key = $this->generateKey();
+        // 1001
+        $this->redis->setbit($key, 0, 1);
+        $this->redis->setbit($key, 3, 1);
+
+        $key2 = $this->generateKey();
+        // 1101
+        $this->redis->setbit($key2, 0, 1);
+        $this->redis->setbit($key2, 1, 1);
+        $this->redis->setbit($key2, 3, 1);
+
+        $key3 = $this->generateKey();
+        // 1001
+        $res = $this->redis->bitop_a('AND', $key3, [$key, $key2]);
+        $this->assertEquals(1, $res);
+        $res = $this->redis->getbit($key3, 0);
+        $this->assertEquals(1, $res);
+        $res = $this->redis->getbit($key3, 1);
+        $this->assertEquals(0, $res);
+        $res = $this->redis->getbit($key3, 2);
+        $this->assertEquals(0, $res);
+        $res = $this->redis->getbit($key3, 3);
+        $this->assertEquals(1, $res);
+    }
+
     /**
      * BITFIELD 命令可以将一个 Redis 字符串看作是一个由二进制位组成的数组，
      * 并对这个数组中储存的长度不同的整数进行访问 （被储存的整数无需进行对齐）
@@ -261,6 +288,16 @@ class StringTest extends TestCase
         $this->assertArraySubset(['hello', 'world'], $res);
     }
 
+    public function testMGetA()
+    {
+        $key1 = $this->generateKey();
+        $key2 = $this->generateKey();
+        $this->redis->mset($key1, 'hello', $key2, 'world');
+
+        $res = $this->redis->mget_a([$key1, $key2]);
+        $this->assertArraySubset(['hello', 'world'], $res);
+    }
+
     /**
      * 同时设置一个或多个 key-value 对
      */
@@ -269,6 +306,14 @@ class StringTest extends TestCase
         $key1 = $this->generateKey();
         $key2 = $this->generateKey();
         $res = $this->redis->mset($key1, 'hello', $key2, 'world');
+        $this->assertTrue($res);
+    }
+
+    public function testMSetA()
+    {
+        $key1 = $this->generateKey();
+        $key2 = $this->generateKey();
+        $res = $this->redis->mset_a([$key1, 'hello', $key2, 'world']);
         $this->assertTrue($res);
     }
 
@@ -286,6 +331,19 @@ class StringTest extends TestCase
         $this->assertEquals(1, $res);
 
         $res = $this->redis->msetnx($key1, 'hello', $key3, 'world');
+        $this->assertEquals(0, $res);
+    }
+
+    public function testMSetNXA()
+    {
+        $key1 = $this->generateKey();
+        $key2 = $this->generateKey();
+        $key3 = $this->generateKey();
+
+        $res = $this->redis->msetnx_a([$key1, 'hello', $key2, 'world']);
+        $this->assertEquals(1, $res);
+
+        $res = $this->redis->msetnx_a([$key1, 'hello', $key3, 'world']);
         $this->assertEquals(0, $res);
     }
 

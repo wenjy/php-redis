@@ -36,6 +36,13 @@ class HashTest extends TestCase
         $this->assertEquals(2, $res);
     }
 
+    public function testMSetA()
+    {
+        $key = $this->generateKey();
+        $res = $this->redis->hmset_a($key, ['key1', 'val1', 'key2', 'val2']);
+        $this->assertEquals(2, $res);
+    }
+
     /**
      * 将哈希表 key 中的域 field 的值设置为 value ，当且仅当域 field 不存在
      */
@@ -83,6 +90,19 @@ class HashTest extends TestCase
         $this->assertArraySubset([], $members);
     }
 
+    public function testMGetA()
+    {
+        $key = $this->generateKey();
+        $this->redis->hset($key, 'key1', 'val1');
+        $this->redis->hset($key, 'key2', 'val2');
+
+        $members = $this->redis->hmget_a($key, ['key1', 'key2']);
+        $this->assertArraySubset(['val1', 'val2'], $members);
+
+        $members = $this->redis->hmget_a($this->generateKey(), ['key1']);
+        $this->assertArraySubset([], $members);
+    }
+
     /**
      * 以列表形式返回哈希表的域和域的值。若 key 不存在，返回空列表
      */
@@ -122,7 +142,16 @@ class HashTest extends TestCase
         $key = $this->generateKey();
         $this->redis->hset($key, 'key1', 'val1');
 
-        $number = $this->redis->del($key, $this->generateKey());
+        $number = $this->redis->hdel($key, 'key1', $this->generateKey());
+        $this->assertEquals(1, $number);
+    }
+
+    public function testDelA()
+    {
+        $key = $this->generateKey();
+        $this->redis->hset($key, 'key1', 'val1');
+
+        $number = $this->redis->hdel_a($key, ['key1', $this->generateKey()]);
         $this->assertEquals(1, $number);
     }
 

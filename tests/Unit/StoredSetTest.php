@@ -24,6 +24,16 @@ class StoredSetTest extends TestCase
         $this->assertEquals(0, $number);
     }
 
+    public function testAddA()
+    {
+        $key = $this->generateKey();
+        $number = $this->redis->zadd_a($key, [1, 'val1', 2, 'val2']);
+        $this->assertEquals(2, $number);
+
+        $number = $this->redis->zadd_a($key, [3, 'val1', 4, 'val2']);
+        $this->assertEquals(0, $number);
+    }
+
     /**
      * 返回有序集 key 的基数，key不存在时返回0
      */
@@ -123,6 +133,18 @@ class StoredSetTest extends TestCase
         $this->assertEquals(1, $removeNumber);
 
         $removeNumber = $this->redis->zrem($key, 'val2', 'val3');
+        $this->assertEquals(1, $removeNumber);
+    }
+
+    public function testRemA()
+    {
+        $key = $this->generateKey();
+        $this->redis->zadd($key, 1, 'val1', 2, 'val2');
+
+        $removeNumber = $this->redis->zrem_a($key, ['val1']);
+        $this->assertEquals(1, $removeNumber);
+
+        $removeNumber = $this->redis->zrem_a($key, ['val2', 'val3']);
         $this->assertEquals(1, $removeNumber);
     }
 

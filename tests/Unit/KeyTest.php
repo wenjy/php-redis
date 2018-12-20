@@ -23,6 +23,16 @@ class KeyTest extends TestCase
         $this->assertEquals(1, $res);
     }
 
+    public function testDelA()
+    {
+        $key1 = $this->generateKey();
+        $key2 = $this->generateKey();
+
+        $this->redis->set($key1, 'hello');
+        $res = $this->redis->del_a([$key1, $key2]);
+        $this->assertEquals(1, $res);
+    }
+
     /**
      * 序列化给定 key ，并返回被序列化的值，使用 RESTORE 命令可以将这个值反序列化为 Redis 键
      */
@@ -43,15 +53,30 @@ class KeyTest extends TestCase
      */
     public function testExists()
     {
-        $key = $this->generateKey();
-        $this->redis->set($key, 'hello');
+        $key1 = $this->generateKey();
+        $this->redis->set($key1, 'hello');
 
-        $res = $this->redis->exists($key);
-        $this->assertEquals(1, $res);
+        $key2 = $this->generateKey();
+        $this->redis->set($key2, 'world');
+
+        $res = $this->redis->exists($key1, $key2);
+        $this->assertEquals(2, $res);
 
         $key = $this->generateKey();
         $res = $this->redis->exists($key);
         $this->assertEquals(0, $res);
+    }
+
+    public function testExistsA()
+    {
+        $key1 = $this->generateKey();
+        $this->redis->set($key1, 'hello');
+
+        $key2 = $this->generateKey();
+        $this->redis->set($key2, 'world');
+
+        $res = $this->redis->exists_a([$key1, $key2]);
+        $this->assertEquals(2, $res);
     }
 
     /**
@@ -93,6 +118,12 @@ class KeyTest extends TestCase
         $this->assertInternalType('array', $keys);
     }
 
+    /**
+     * 命令允许从内部察看给定 key 的 Redis 对象
+     * OBJECT REFCOUNT <key> 返回给定 key 引用所储存的值的次数。此命令主要用于除错
+     * OBJECT ENCODING <key> 返回给定 key 锁储存的值所使用的内部表示(representation)
+     * OBJECT IDLETIME <key> 返回给定 key 自储存以来的空闲时间(idle， 没有被读取也没有被写入)，以秒为单位
+     */
     public function testObject()
     {
         $key = $this->generateKey();
@@ -105,6 +136,21 @@ class KeyTest extends TestCase
         $this->assertEquals(0, $res);
 
         $res = $this->redis->object('ENCODING', $key);
+        $this->assertEquals('embstr', $res);
+    }
+
+    public function testObjectA()
+    {
+        $key = $this->generateKey();
+        $this->redis->set($key, 'hello');
+
+        $res = $this->redis->object_a('REFCOUNT', [$key]);
+        $this->assertEquals(1, $res);
+
+        $res = $this->redis->object_a('IDLETIME', [$key]);
+        $this->assertEquals(0, $res);
+
+        $res = $this->redis->object_a('ENCODING', [$key]);
         $this->assertEquals('embstr', $res);
     }
 

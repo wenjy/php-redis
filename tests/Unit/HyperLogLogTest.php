@@ -44,4 +44,29 @@ class HyperLogLogTest extends TestCase
         $count = $this->redis->pfcount($key3);
         $this->assertEquals(5, $count);
     }
+
+    public function testPFAddA()
+    {
+        $key1 = $this->generateKey('ip:20181219');
+        $res = $this->redis->pfadd_a($key1, ['1.1.1.1', '2.2.2.2', '3.3.3.3']);
+        $this->assertEquals(1, $res);
+        $res = $this->redis->pfadd_a($key1, ['1.1.1.1']);
+        $this->assertEquals(0, $res);
+
+        $this->redis->pfadd_a($key1, ['3.3.3.3', '4.4.4.4']);
+        $count = $this->redis->pfcount_a([$key1]);
+        $this->assertEquals(4, $count);
+
+        $key2 = $this->generateKey('ip:20181220');
+        $this->redis->pfadd_a($key2, ['3.3.3.3', '4.4.4.4', '5.5.5.5']);
+        $count = $this->redis->pfcount_a([$key1, $key2]);
+        $this->assertEquals(5, $count);
+
+        $key3 = $this->generateKey('ip:201812');
+        $res = $this->redis->pfmerge_a($key3, [$key1, $key2]);
+        $this->assertTrue($res);
+
+        $count = $this->redis->pfcount($key3);
+        $this->assertEquals(5, $count);
+    }
 }

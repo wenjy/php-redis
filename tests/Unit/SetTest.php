@@ -25,6 +25,16 @@ class SetTest extends TestCase
         $this->assertEquals(0, $number);
     }
 
+    public function testAddA()
+    {
+        $key = $this->generateKey();
+        $number = $this->redis->sadd_a($key, ['val1', 'val2']);
+        $this->assertEquals(2, $number);
+
+        $number = $this->redis->sadd_a($key, ['val1', 'val2']);
+        $this->assertEquals(0, $number);
+    }
+
     /**
      * 返回集合 key 中元素的数量，当 key 不存在时，返回 0
      */
@@ -183,6 +193,17 @@ class SetTest extends TestCase
         $this->assertEquals(2, $number);
 
         $number = $this->redis->srem($key, 'val3', 'val4');
+        $this->assertEquals(1, $number);
+    }
+
+    public function testRemA()
+    {
+        $key = $this->generateKey();
+        $this->redis->sadd($key, 'val1', 'val2', 'val3');
+        $number = $this->redis->srem_a($key, ['val1', 'val2']);
+        $this->assertEquals(2, $number);
+
+        $number = $this->redis->srem_a($key, ['val3', 'val4']);
         $this->assertEquals(1, $number);
     }
 
