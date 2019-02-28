@@ -9,8 +9,8 @@
 
 namespace EasyRedis;
 
-use EasyRedis\Exceptions\Exception;
-use EasyRedis\Exceptions\SocketException;
+use EasyRedis\Exceptions\RedisException;
+use EasyRedis\Exceptions\SocketRedisException;
 use EasyRedis\Helpers\Inflector;
 
 /**
@@ -565,7 +565,7 @@ class Connection
     /**
      * Establishes a DB connection.
      * It does nothing if a DB connection has already been established.
-     * @throws Exception if connection fails
+     * @throws RedisException if connection fails
      * @throws \Exception
      */
     public function open()
@@ -593,7 +593,7 @@ class Connection
             }
         } else {
             $message = 'Failed to open DB connection.';
-            throw new Exception($message, $errorDescription, $errorNumber);
+            throw new RedisException($message, $errorDescription, $errorNumber);
         }
     }
 
@@ -608,7 +608,7 @@ class Connection
             $connection = ($this->unixSocket ?: $this->hostname . ':' . $this->port) . ', database=' . $this->database;
             try {
                 $this->executeCommand('QUIT');
-            } catch (SocketException $e) {
+            } catch (SocketRedisException $e) {
                 // ignore errors when quitting a closed connection
             }
             fclose($this->_socket);
@@ -639,7 +639,7 @@ class Connection
      * @param string $name name of the missing method to execute
      * @param array $params method call arguments
      * @return mixed
-     * @throws Exception
+     * @throws RedisException
      * @throws \Exception
      */
     public function __call($name, $params)
@@ -653,7 +653,7 @@ class Connection
             return $this->executeCommand($redisCommand, $params);
         }
 
-        throw new Exception("method {$name} not found");
+        throw new RedisException("method {$name} not found");
     }
 
     /**
@@ -709,7 +709,7 @@ class Connection
      *
      * See [redis protocol description](http://redis.io/topics/protocol)
      * for details on the mentioned reply types.
-     * @throws Exception for commands that return [error reply](http://redis.io/topics/protocol#error-reply).
+     * @throws RedisException for commands that return [error reply](http://redis.io/topics/protocol#error-reply).
      * @throws \Exception
      */
     public function executeCommand($name, $params = [])
@@ -727,7 +727,7 @@ class Connection
             while ($tries-- > 0) {
                 try {
                     return $this->sendCommandInternal($command, $params);
-                } catch (SocketException $e) {
+                } catch (SocketRedisException $e) {
                     // backup retries, fail on commands that fail inside here
                     $retries = $this->retries;
                     $this->retries = 0;
@@ -742,17 +742,17 @@ class Connection
 
     /**
      * Sends RAW command string to the server.
-     * @throws SocketException on connection error.
+     * @throws SocketRedisException on connection error.
      * @throws \Exception
      */
     private function sendCommandInternal($command, $params)
     {
         $written = @fwrite($this->_socket, $command);
         if ($written === false) {
-            throw new SocketException("Failed to write to socket.\nRedis command was: " . $command);
+            throw new SocketRedisException("Failed to write to socket.\nRedis command was: " . $command);
         }
         if ($written !== ($len = mb_strlen($command, '8bit'))) {
-            throw new SocketException("Failed to write to socket. $written of $len bytes written.\nRedis command was: " . $command);
+            throw new SocketRedisException("Failed to write to socket. $written of $len bytes written.\nRedis command was: " . $command);
         }
         return $this->parseResponse(implode(' ', $params));
     }
@@ -765,12 +765,12 @@ class Connection
      * For Arrays the first byte of the reply is "*"           "*0\r\n" "*-1\r\n" *3\r\n:1\r\n:2\r\n$6\r\nfoobar\r\n
      * @param string $command
      * @return mixed
-     * @throws Exception on error
+     * @throws RedisException on error
      */
     private function parseResponse($command)
     {
         if (($line = fgets($this->_socket)) === false) {
-            throw new SocketException("Failed to read from socket.\nRedis command was: " . $command);
+            throw new SocketRedisException("Failed to read from socket.\nRedis command was: " . $command);
         }
         $type = $line[0];
         $line = mb_substr($line, 1, -2, '8bit');
@@ -782,7 +782,7 @@ class Connection
                     return $line;
                 }
             case '-': // Error reply
-                throw new Exception("Redis error: " . $line . "\nRedis command was: " . $command);
+                throw new RedisException("Redis error: " . $line . "\nRedis command was: " . $command);
             case ':': // Integer reply
                 // no cast to int as it is in the range of a signed 64 bit integer
                 return $line;
@@ -794,7 +794,7 @@ class Connection
                 $data = '';
                 while ($length > 0) {
                     if (($block = fread($this->_socket, $length)) === false) {
-                        throw new SocketException("Failed to read from socket.\nRedis command was: " . $command);
+                        throw new SocketRedisException("Failed to read from socket.\nRedis command was: " . $command);
                     }
                     $data .= $block;
                     $length -= mb_strlen($block, '8bit');
@@ -810,7 +810,7 @@ class Connection
 
                 return $data;
             default:
-                throw new Exception('Received illegal data from redis: ' . $line . "\nRedis command was: " . $command);
+                throw new RedisException('Received illegal data from redis: ' . $line . "\nRedis command was: " . $command);
         }
     }
 }

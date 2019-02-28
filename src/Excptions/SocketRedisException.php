@@ -7,7 +7,7 @@
 
 namespace EasyRedis\Exceptions;
 
-class SocketException extends Exception
+class SocketRedisException extends RedisException
 {
 
 }

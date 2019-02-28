@@ -9,7 +9,7 @@ namespace EasyRedis\Exceptions;
 
 use Throwable;
 
-class Exception extends \Exception
+class RedisException extends \Exception
 {
     public $errorInfo = [];
 
