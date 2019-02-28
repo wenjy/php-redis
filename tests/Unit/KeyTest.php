@@ -375,7 +375,7 @@ class KeyTest extends TestCase
         $this->redis->hmset($key5, 'key1', 'hello', 'key2', 'world');
 
         $res = $this->redis->scan(0, 'MATCH', self::TEST_REDIS_KEY_PRE . '*', 'COUNT', 5);
-        $this->assertEquals(5, count($res[1]));
+        $this->assertEquals(2, count($res));
 
         $res = $this->redis->sscan($key3, 0);
         $this->assertEquals(2, count($res[1]));

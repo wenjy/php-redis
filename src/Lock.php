@@ -104,13 +104,13 @@ class Lock
      * 释放公平信号量
      * @param $semname
      * @param $identifier
-     * @return mixed
+     * @return bool
      */
     public function releaseFairSemaphore($semname, $identifier)
     {
         $this->redis->zrem($semname, $identifier);
         $ownerZset = $semname . ':owner';
-        return $this->redis->zrem($ownerZset, $identifier);
+        return (bool)$this->redis->zrem($ownerZset, $identifier);
     }
 
     /**
